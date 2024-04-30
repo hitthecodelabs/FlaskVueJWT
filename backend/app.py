@@ -127,11 +127,6 @@ if __name__ == '__main__':
 # newuser92 newuser92@example.com strongpassword92
 # newuser93 newuser93@example.com strongpassword93
 
-# 16:27, Breaking Bad episode
-
-### https://api.telegram.org/bot6947652517:AAH8HosWkhyUWaMXgTJ8Sxes2QUz5nCRKTw/getupdates
-### https://one.google.com/u/1/explore-plan/gemini-advanced?pageId=none&g1_landing_page=65
-
 # happyfox.com/help-desk-ticketing-system
 # freshworks.com/freshservice
 # knots.io
