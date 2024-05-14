@@ -14,7 +14,7 @@ from sqlalchemy.exc import IntegrityError
 from dotenv import load_dotenv
 
 
-from extensions import db  # Import the SQLAlchemy instance
+from extensions import db
 from models import User
 
 import logging
@@ -213,6 +213,3 @@ def hello():
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=True, threaded=True) ### debug
     # app.run(host='0.0.0.0', port=5000, use_reloader=True, threaded=True) ### prod
-
-# newuser@example.com strongpassword first last company0
-# newuser1@example.com strongpassword1 first last company1
