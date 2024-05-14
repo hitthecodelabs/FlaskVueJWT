@@ -2,8 +2,8 @@
 
 import json
 import unittest
-from app import app, db
 from models import User
+from app import app, db
 from http.cookies import SimpleCookie
 
 def parse_cookies(response):
