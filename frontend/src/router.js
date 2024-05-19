@@ -10,6 +10,7 @@ import AboutUs from './components/AboutUs.vue';
 import ContactUs from './components/ContactUs.vue';
 import PricingPlans from './components/PricingPlans.vue';
 import PrivacyPolicy from './components/PrivacyPolicy.vue';
+import SaveApiKey from './components/SaveApiKey.vue';
 
 const routes = [
   { path: '/', component: HomePage },
@@ -20,6 +21,8 @@ const routes = [
   { path: '/about', component: AboutUs },
   { path: '/contact', component: ContactUs },
   { path: '/privacy', component: PrivacyPolicy },
+  { path: '/save-api-key', component: SaveApiKey, meta: { requiresAuth: true } },
+
 ];
 
 const router = createRouter({
