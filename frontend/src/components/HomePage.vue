@@ -1,7 +1,9 @@
 <!-- src/components/HomePage.vue -->
+
 <template>
   <div class="home">
-    <h1>Welcome to Our Application!</h1>
+    <h1>Welcome!</h1>
+    <!-- <h1>Welcome to Our Application!</h1> -->
     <!-- Conditionally render buttons based on authentication status -->
     <!-- <button v-if="!isAuthenticated" @click="goToSignup">Sign Up</button> -->
     <!-- <button v-if="!isAuthenticated" @click="goToLogin">Log In</button> -->
