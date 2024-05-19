@@ -1,4 +1,5 @@
 <!-- src/components/FooTer.vue -->
+
 <template>
     <footer class="footer">
       <div class="footer-content">
