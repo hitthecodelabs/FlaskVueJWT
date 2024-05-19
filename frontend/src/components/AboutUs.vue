@@ -1,3 +1,5 @@
+<!-- src/components/AboutUs.vue -->
+
 <template>
   <div class="about-us">
     <div class="about-us__content">
