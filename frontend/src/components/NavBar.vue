@@ -6,6 +6,7 @@
       <li><router-link to="/" class="nav-link">Home</router-link></li>
       <li v-if="isAuthenticated"><router-link to="/dashboard" class="nav-link">Dashboard</router-link></li>
       <li v-if="isAuthenticated"><router-link to="/pricing" class="nav-link">Pricing</router-link></li>
+      <li v-if="isAuthenticated"><router-link to="/save-api-key" class="nav-link">Save API Key</router-link></li>
       <li v-if="!isAuthenticated"><router-link to="/login" class="nav-link">Log In</router-link></li>
       <li v-if="!isAuthenticated"><router-link to="/signup" class="nav-link">Sign Up</router-link></li>
       <li v-if="isAuthenticated"><router-link to="#" @click="logout" class="nav-link">Logout</router-link></li>
