@@ -1,3 +1,5 @@
+<!-- src/components/PrivacyPolicy.vue -->
+
 <template>
   <div class="privacy-policy">
     <h2>Privacy Policy</h2>
