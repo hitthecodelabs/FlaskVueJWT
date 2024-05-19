@@ -1,6 +1,7 @@
 ### app.py
 
 import os
+import requests
 from flask_cors import CORS
 from flask_migrate import Migrate
 
@@ -8,14 +9,13 @@ from flask_jwt_extended import JWTManager, create_access_token
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_jwt_extended import decode_token
 
+from models import User
+from extensions import db
+from dotenv import load_dotenv
+from requests.auth import HTTPBasicAuth
+from sqlalchemy.exc import IntegrityError
 from flask import Flask, jsonify, request, current_app, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.exc import IntegrityError
-from dotenv import load_dotenv
-
-
-from extensions import db
-from models import User
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -205,6 +205,91 @@ def logout():
     response.set_cookie('access_token', '', expires=0, httponly=True, samesite='Lax', secure=False)
     # response.set_cookie('access_token', '', expires=0)  # Clear the access token cookie
     return response
+
+@app.route('/api/save_api_key', methods=['POST'])
+@jwt_required()
+def save_api_key():
+    try:
+        user_id = get_jwt_identity()
+        data = request.get_json()
+        api_key = data.get('api_key')
+        jira_domain = data.get('jira_domain')
+        jira_email = data.get('jira_email')
+
+        logging.info(f"Received API Key: {api_key}")
+        logging.info(f"Received Jira Domain: {jira_domain}")
+        logging.info(f"Received Jira Email: {jira_email}")
+
+        if not api_key:
+            return jsonify({'error': 'API key is required'}), 400
+        
+        user = db.session.get(User, user_id)
+        if user:
+            user.api_key = api_key
+            user.jira_domain = jira_domain
+            user.jira_email = jira_email
+            db.session.commit()
+            logging.info(f"Saved API key and Jira information for user ID: {user_id}")
+            return jsonify({'message': 'API key and Jira information saved successfully'}), 200
+        return jsonify({'error': 'User not found'}), 404
+    except Exception as e:
+        logging.error(f'Error saving API key: {e}')
+        return jsonify({'error': 'Failed to save API key', 'message': str(e)}), 500
+
+
+@app.route('/api/get_api_key', methods=['GET'])
+@jwt_required()
+def get_api_key():
+    try:
+        user_id = get_jwt_identity()
+        user = db.session.get(User, user_id)
+        if user and user.api_key:
+            return jsonify({
+                'api_key': user.api_key,
+                'jira_domain': user.jira_domain,
+                'jira_email': user.jira_email
+            }), 200
+        return jsonify({'message': 'API key not found'}), 404
+    except Exception as e:
+        logging.error(f'Error fetching API key: {e}')
+        return jsonify({'error': 'Failed to fetch API key', 'message': str(e)}), 500
+
+@app.route('/api/jira_user_info', methods=['GET'])
+@jwt_required()
+def jira_user_info():
+    logging.info("Accessing /api/jira_user_info")
+    try:
+        user_id = get_jwt_identity()
+        logging.info(f"User ID: {user_id}")
+        user = db.session.get(User, user_id)
+        if user:
+            logging.info(f"Retrieved user: {user.email}")
+            logging.info(f"API Key: {user.api_key}")
+            logging.info(f"Jira Domain: {user.jira_domain}")
+            logging.info(f"Jira Email: {user.jira_email}")
+        if user and user.api_key and user.jira_domain and user.jira_email:
+            response = jira_api_request(user.jira_domain, user.jira_email, user.api_key, 'myself')
+            logging.info("Jira API request successful")
+            return jsonify(response), 200
+        logging.warning("Jira information not found")
+        return jsonify({'message': 'Jira information not found'}), 404
+    except Exception as e:
+        logging.error(f'Error fetching Jira user info: {e}')
+        return jsonify({'error': 'Failed to fetch Jira user info', 'message': str(e)}), 500
+
+def jira_api_request(jira_domain, jira_email, jira_api_token, endpoint):
+    url = f"https://{jira_domain}.atlassian.net/rest/api/3/{endpoint}"
+    auth = HTTPBasicAuth(jira_email, jira_api_token)
+    headers = {
+        "Accept": "application/json"
+    }
+    response = requests.get(url, headers=headers, auth=auth, 
+                            verify=True
+                            )
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return {"error": f"Request failed with status code {response.status_code}", "details": response.text}
 
 @app.route('/')
 def hello():
