@@ -1,4 +1,4 @@
-<!-- src/components/Dashboard.vue -->
+<!-- src/components/DashboardPage.vue -->
 
 <template>
   <div class="dashboard-container">
@@ -9,15 +9,22 @@
       <h1>Welcome to Your Dashboard, {{ fullName }}!</h1>
       <p>Email: {{ email }}</p>
       <p>Company: {{ company }}</p>
-      <!-- <button @click="logout">Logout</button> -->
+      <div v-if="jiraUser">
+        <h2>Jira Information</h2>
+        <p>Display Name: {{ jiraUser.displayName }}</p>
+        <p>Email Address: {{ jiraUser.emailAddress }}</p>
+        <p>Account ID: {{ jiraUser.accountId }}</p>
+        <p>Time Zone: {{ jiraUser.timeZone }}</p>
+        <img :src="jiraUser.avatarUrls['48x48']" alt="User Avatar" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { useAuthStore } from '@/store/auth';
-import { apiRequest } from '../api';
 import { useRouter } from 'vue-router';
+import { apiRequest } from '../api';
 
 export default {
   name: 'DashboardPage',
@@ -32,11 +39,17 @@ export default {
   async mounted() {
     await this.initializeDashboard();
   },
+  computed: {
+    jiraUser() {
+      const { jiraUser } = useAuthStore();
+      return jiraUser.value;
+    }
+  },
   methods: {
     async initializeDashboard() {
-      const { isAuthenticated, checkAuth, userData, fetchUserData } = useAuthStore();
+      const { isAuthenticated, checkAuth, userData, fetchUserData, fetchJiraUserInfo } = useAuthStore();
       const router = useRouter();
-      checkAuth(); // Ensure the auth state is updated
+      await checkAuth(); // Ensure the auth state is updated
 
       if (!isAuthenticated.value) {
         router.push('/login');
@@ -48,7 +61,6 @@ export default {
         this.fullName = `${userData.value.first_name} ${userData.value.last_name}`;
         this.email = userData.value.email;
         this.company = userData.value.company_name;
-        this.loading = false; // Data loaded, hide the loading indicator
       } else {
         // Fetch data from the API
         await fetchUserData();
@@ -56,12 +68,15 @@ export default {
           this.fullName = `${userData.value.first_name} ${userData.value.last_name}`;
           this.email = userData.value.email;
           this.company = userData.value.company_name;
-          this.loading = false; // Data loaded, hide the loading indicator
         } else {
           console.error("Failed to fetch user data.");
           this.logout();
         }
       }
+
+      // Fetch Jira user info if not already in cache
+      await fetchJiraUserInfo();
+      this.loading = false; // Data loaded, hide the loading indicator
     },
     logout() {
       apiRequest('/api/logout', 'post').then(() => {
