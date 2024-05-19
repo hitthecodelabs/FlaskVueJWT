@@ -11,4 +11,6 @@ class User(db.Model):
     last_name = db.Column(db.String(255), nullable=True)
     company_name = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.TIMESTAMP, nullable=False, default=db.func.current_timestamp())
-
+    api_key = db.Column(db.String(255), nullable=True)
+    jira_domain = db.Column(db.String(255), nullable=True)
+    jira_email = db.Column(db.String(255), nullable=True)
