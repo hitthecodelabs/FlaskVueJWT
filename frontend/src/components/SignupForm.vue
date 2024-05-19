@@ -3,23 +3,23 @@
 <template>
   <div class="signup-form-container">
     <h2>Join Us</h2>
-    <form @submit.prevent="handleSubmit" class="signup-form">
+    <form @submit.prevent="handleSubmit" class="signup-form" autocomplete="off">
       <div class="input-group">
-        <input type="email" id="email" v-model="email" required placeholder="Email" aria-label="Email"/>
+        <input type="email" id="email" v-model="email" required placeholder="Email" aria-label="Email" autocomplete="off"/>
       </div>
       <div class="input-group">
-        <input type="password" id="password" v-model="password" required placeholder="Password" aria-label="Password"/>
+        <input type="password" id="password" v-model="password" required placeholder="Password" aria-label="Password" autocomplete="new-password"/>
       </div>
       <div class="name-group">
         <div class="input-group half-width">
-          <input type="text" id="first-name" v-model="first_name" placeholder="First Name" aria-label="First Name"/>
+          <input type="text" id="first-name" v-model="first_name" placeholder="First Name" aria-label="First Name" autocomplete="new-given-name"/>
         </div>
         <div class="input-group half-width">
-          <input type="text" id="last-name" v-model="last_name" placeholder="Last Name" aria-label="Last Name"/>
+          <input type="text" id="last-name" v-model="last_name" placeholder="Last Name" aria-label="Last Name" autocomplete="new-family-name"/>
         </div>
       </div>
       <div class="input-group">
-        <input type="text" id="company-name" v-model="company_name" placeholder="Company Name" aria-label="Company Name"/>
+        <input type="text" id="company-name" v-model="company_name" placeholder="Company Name" aria-label="Company Name" autocomplete="new-organization"/>
       </div>
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
       <div class="button-container">
