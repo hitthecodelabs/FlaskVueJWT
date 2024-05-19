@@ -1,4 +1,5 @@
-// api.js
+// src/api.js
+
 import axios from 'axios';
 import router from './router';
 
@@ -42,21 +43,23 @@ export async function registerUser(userData) {
 }
 
 // Function to handle API requests
-export async function apiRequest(url, method, data) {
+export async function apiRequest(url, method, data = null) {
   const fullUrl = `${process.env.VUE_APP_API_URL}${url}`;
-  console.log("Request URL:", fullUrl); // Add this line to log the URL
+  console.log("Request URL:", fullUrl); // Log the URL
   try {
     const response = await axios({
       method: method,
       url: fullUrl,
-      data: data,
+      data: method.toLowerCase() === 'get' ? null : data, // Only include data for non-GET requests
       headers: {
         'Content-Type': 'application/json',
       }
     });
+    console.log("Response Data:", response.data); // Log the response data
     return { success: true, data: response.data, error: null };
   } catch (error) {
     console.error("Axios Error:", error); // Log the axios error to the console
+    console.log("Error Response:", error.response); // Log the error response
     return {
       success: false,
       data: null,
@@ -86,4 +89,14 @@ export function resetFormData(dataObject) {
   for (const key in dataObject) {
     dataObject[key] = '';
   }
+}
+
+// Function to save API key
+export async function saveApiKey(apiKey, jiraDomain, jiraEmail) {
+  return await apiRequest('/api/save_api_key', 'post', { api_key: apiKey, jira_domain: jiraDomain, jira_email: jiraEmail });
+}
+
+// Function to get API key
+export async function getApiKey() {
+  return await apiRequest('/api/get_api_key', 'get');
 }
